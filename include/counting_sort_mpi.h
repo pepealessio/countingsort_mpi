@@ -40,6 +40,8 @@
 #ifndef _DEF_COUNTINGSORT_MPI_H_
 #define _DEF_COUNTINGSORT_MPI_H_
 
+#define VERSION 2  // 1 or 2
+
 void counting_sort_mpi(const char *fileName, size_t arrayLen);
 
 #endif /*_DEF_COUNTINGSORT_MPI_H_*/

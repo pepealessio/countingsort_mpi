@@ -99,14 +99,24 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
     // Compute the lenght of the pmf array
     CLen = max - min + 1;
 
+    // In version 1 just the master have the complete pmf array. That compute the CDF array anf
+    // distribute that to the various thread. 
+    // In version 2 all thread receive the pmf array and each one compute the needed part of CDF 
+    // array.
+#if VERSION == 1
     // Just master thread allocate the global pmf array (plus one because we want transform that in a CDF array with a starting 0).
     if (worldRank == 0) 
     {
         C = (size_t *) calloc(CLen+1, sizeof(size_t));
     }
+#endif
 
     // Each thread allocate a local C array (plus one element for same reason)
+#if VERSION == 1
     locC = (size_t *) calloc(CLen+1, sizeof(size_t));
+#elif VERSION == 2
+    locC = (size_t *) calloc(CLen, sizeof(size_t));
+#endif
     
     // Count the local pmf array.
     for (size_t i = 0; i < locArrayLen; i++)
@@ -116,12 +126,19 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
 
     // Dealloc no more useful local array
     free(locArray);
-    
+
+#if VERSION == 1
     // Reduce to global pmf array (starting from the second element of C because we need the first equal to one).
     MPI_Reduce(locC, C+1, CLen, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+#elif VERSION == 2
+    C = (size_t *) calloc(CLen, sizeof(size_t));
+    MPI_Allreduce(locC, C, CLen, MPI_LONG, MPI_SUM, MPI_COMM_WORLD);
+    free(locC);
+#endif
     // ---------------------------------------------------------------
 
     // ------------------- Compute the CDF vector --------------------
+#if VERSION == 1
     // Master thread compute the CDF array
     if (worldRank == 0) 
     {
@@ -154,19 +171,37 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
     // ---------------------------------------------------------------
 
     // ------------------- Split & send CDF array --------------------
-
-    // Send realLocCDFLen to all thread because they need that to compute the value to write in the file
-    //MPI_Bcast(&realLocCDFLen, 1, MPI_INT, 0, MPI_COMM_WORLD);
     realLocCDFLen = CLen / worldSize;
 
-    // Send the lenght of the CDF array to each thread (lenght can be different because last thread have problably more element).
-    //MPI_Scatter(locCDFLens, 1, MPI_INT, &locCDFLen, 1, MPI_INT, 0, MPI_COMM_WORLD);
-    if (worldRank == worldSize-1){
-        locCDFLen = CLen / worldSize + 1 + CLen % worldSize;
-    }else{
-        locCDFLen = CLen / worldSize + 1;
+    // lenght of the CDF array to each thread (lenght can be different because last thread have problably more element).
+    if (worldRank == worldSize-1)
+    {
+        locCDFLen = realLocCDFLen + 1 + CLen % worldSize;
+    }
+    else
+    {
+        locCDFLen = realLocCDFLen + 1;
     }
 
+#elif VERSION == 2
+    realLocCDFLen = CLen / worldSize;
+
+    if (worldRank == worldSize-1)
+    {
+        locCDFLen = realLocCDFLen + CLen % worldSize;
+    }
+    else
+    {
+        locCDFLen = realLocCDFLen;
+    }
+
+    for (size_t i = 1; i < worldRank * realLocCDFLen + locCDFLen; i++)
+    {
+        C[i] += C[i-1];
+    }
+#endif
+
+#if VERSION == 1
     // Divide the CDF array on the different threads
     MPI_Scatterv(C, locCDFLens, locCDFDisplacement,  MPI_LONG, locC, locCDFLen, MPI_LONG, 0, MPI_COMM_WORLD); 
     
@@ -177,12 +212,15 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
         free(locCDFDisplacement);
         free(C);
     }
+#endif
     // ---------------------------------------------------------------
 
     // ----------------- Write the correct result --------------------
 
     // Each thread compute the part of the array to write
+#if VERSION == 1
     locWriteSize = (locC[locCDFLen-1] - locC[0]);
+
     locOut = malloc( locWriteSize * sizeof(int));
 
     int k = 0;
@@ -197,6 +235,37 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
     // Each thread compute the offset to write the ordered elements in the file based on the local CDF array
     MPI_File_seek(fh, locC[0] * sizeof(int), MPI_SEEK_SET);
 
+#elif VERSION == 2
+    if (worldRank == 0)
+    {
+        locWriteSize = C[worldRank*realLocCDFLen+locCDFLen-1] - 0;
+    }
+    else
+    {
+        locWriteSize = C[worldRank*realLocCDFLen+locCDFLen-1] - C[worldRank*realLocCDFLen-1];
+    }
+
+    locOut = malloc(locWriteSize * sizeof(int));
+
+    int k = 0;
+    for (size_t i = worldRank*realLocCDFLen; i < worldRank*realLocCDFLen+locCDFLen; i++)
+    {
+        for (size_t j = (i != 0 ? C[i-1] : 0); j < C[i]; j++)
+        {
+            locOut[k++] = min + i;
+        }
+    }
+
+    if (worldRank == 0)
+    {
+        MPI_File_seek(fh, 0, MPI_SEEK_SET);
+    }
+    else
+    {
+        MPI_File_seek(fh, C[worldRank*realLocCDFLen-1] * sizeof(int), MPI_SEEK_SET);
+    }
+#endif
+
     // Write on file
     MPI_File_write_all(fh, locOut, locWriteSize, MPI_INT, MPI_STATUS_IGNORE);
 
@@ -206,8 +275,14 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
     // Dealloc the writed element
     free(locOut);
 
+#if VERSION == 1
     // Each thread dealloc their local C
     free(locC);
+#endif
+
+#if VERSION == 2
+    free(C);
+#endif
 }
 
 
