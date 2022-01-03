@@ -36,15 +36,15 @@ __version__ = "1.0.0"
 # --------- You can edit this fields -----------
 ARRAY_RC=[1000, 100000, 10000000] #, 10000000]
 ARRAY_RANGE=[1000, 10000] # , 100000]
-ARRAY_THS=[0, 1, 2, 4, 8]
+ARRAY_THS=[0, 1 , 2, 4, 8]
 ARRAY_OPT=[0, 1, 2, 3]
 ARRAY_VERSION=[1, 2]
-TITLE=''
+TITLE='total'
 # ----------------------------------------------
 
 # ------------- Don't edit below here ----------
 
-RAW_FIELDS = ['size', 'range', 'n_th', 't_algo', 'read','minmax','pmf','cdf','split','write'] 
+RAW_FIELDS = ['size', 'range', 'n_th', 't_algo', 'read', 'minmax', 'pmf', 'cdf', 'split', 'write'] 
 
 
 import matplotlib.pyplot as plt
@@ -126,7 +126,7 @@ for version_i, version in enumerate(ARRAY_VERSION):
                     measures[nth_i, -1] = compute_efficiency(measures[0, measure_on_index], measures[nth_i, measure_on_index], nth)
 
                 # Save processed measures
-                np.savetxt(f"measures/processed/version_{version}/{RAW_FIELDS[measure_on_index].upper()}_opt_{opt}_size_{size}_range_{rng}.csv", measures, delimiter=',', header=','.join([*RAW_FIELDS, "speedup", "efficiency"]))
+                np.savetxt(f"measures/processed/version_{version}_{RAW_FIELDS[measure_on_index].upper()}_opt_{opt}_size_{size}_range_{rng}.csv", measures, delimiter=',', header=','.join([*RAW_FIELDS, "speedup", "efficiency"]))
 
 
 # Loop for each (version, size, optimization) tuple
@@ -147,7 +147,7 @@ for version_i, version in enumerate(ARRAY_VERSION):
 
             for range_i, rng in enumerate(ARRAY_RANGE):
 
-                measures = np.genfromtxt(f"measures/processed/version_{version}/{RAW_FIELDS[measure_on_index].upper()}_opt_{opt}_size_{size}_range_{rng}.csv", delimiter=',', invalid_raise=False)
+                measures = np.genfromtxt(f"measures/processed/version_{version}_{RAW_FIELDS[measure_on_index].upper()}_opt_{opt}_size_{size}_range_{rng}.csv", delimiter=',', invalid_raise=False)
                 
                 ax1.plot(t, measures[:, -2][1:], '^-', label=f"r. {rng}")
                 ax2.plot(t, measures[:, -1][1:], '.--')
@@ -165,7 +165,7 @@ for version_i, version in enumerate(ARRAY_VERSION):
             ax1.label_outer()
             fig.tight_layout()
 
-            plt.savefig(f"measures/plots/version_{version}/{RAW_FIELDS[measure_on_index].upper()}_opt_{opt}_size_{size}.png")
+            plt.savefig(f"measures/plots/version_{version}_{RAW_FIELDS[measure_on_index].upper()}_opt_{opt}_size_{size}.png")
             plt.close()
 
 print("Script ended successfully.")

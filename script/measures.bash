@@ -34,7 +34,7 @@ BASE_VALUE=0
 ARRAY_RC=(1000 100000 10000000)
 ARRAY_RANGE=(1000 10000) # 100000)
 ARRAY_THS=(0 1 2 4 8)
-ARRAY_OPT=(2)
+ARRAY_OPT=(0, 1, 2, 3)
 ARRAY_VERSION=(1 2)
 # --------------------------------------------------
 
@@ -72,7 +72,7 @@ for version in "${ARRAY_VERSION[@]}"; do
 						./build/generate file${size} ${size} ${BASE_VALUE} ${BASE_VALUE}+${range}
 						echo -n ${size},${range},${ths}, >> ${OUT_FILE}
 						if [[ ${ths} -eq 0 ]]; then
-							(./build/main_measures_seq_O${opt} file${size} ${size} ${version})2>&1>> ${OUT_FILE}
+							(./build/main_measures_seq_O${opt} file${size} ${size})2>&1>> ${OUT_FILE}
 						else
 							arr=($(mpirun -np ${ths} ./build/main_measures_O${opt} file${size} ${size} ${version}))
 							printf '%s\n' "${arr[@]}" | awk '$1>max||NR==1 {max=$1} END {print  max}' >> ${OUT_FILE}
