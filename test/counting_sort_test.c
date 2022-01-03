@@ -56,15 +56,27 @@ unsigned short ptest1();
 unsigned short ptest2();
 unsigned short ptest3();
 
+#ifdef TIME_MEASURES
+#undef TIME_MEASURES
+#endif
+
 
 int main(int argc, char const *argv[])
 {
-    // assert(empty_test());
-    // assert(test1());
-    // assert(test2());
-    // assert(test3());
+    int worldRank;
 
-    MPI_Init(NULL, NULL); 
+    MPI_Init(NULL, NULL);     
+
+    MPI_Comm_rank(MPI_COMM_WORLD, &worldRank);
+
+    if (worldRank == 0)
+    {
+        assert(empty_test());
+        assert(test1());
+        assert(test2());
+        assert(test3());
+    }
+
     assert(pempty_test());
     assert(ptest1());
     assert(ptest2());
