@@ -49,7 +49,11 @@
  * @param file_name     The file name into write the array.
  * @param len           The lenght to the array to reorder.
  */
+#ifdef TIME_MEASURES
 void counting_sort(const char *file_name, size_t len, double* t1, double* t2, double* t3, double* t4,double* t5) 
+#else
+void counting_sort(const char *file_name, size_t len)
+#endif
 {
     // Empty or lenght=1 array
     if (len < 2) return;
@@ -60,16 +64,21 @@ void counting_sort(const char *file_name, size_t len, double* t1, double* t2, do
     size_t *C;
     size_t C_len, k;
     A = malloc(len * sizeof(int));
-
+#ifdef TIME_MEASURES
     STARTTIME(1);
+#endif
     // Read array from file
     fptr = fopen(file_name, "rb");
     fread(A, sizeof(int), len, fptr);
     fclose(fptr);
+#ifdef TIME_MEASURES
     ENDTIME(1, *t1);
+#endif
 
     //Compute max and min of v.
+#ifdef TIME_MEASURES
     STARTTIME(2);
+#endif
     min = A[0];
     max = A[0];
 
@@ -84,10 +93,14 @@ void counting_sort(const char *file_name, size_t len, double* t1, double* t2, do
             max = A[i];
         }
     }
+#ifdef TIME_MEASURES
     ENDTIME(2, *t2);
+#endif
 
     // Construct a zeros array of lenght max-min+1.
+#ifdef TIME_MEASURES
     STARTTIME(3);
+#endif
     C_len = max - min + 1;
     C = (size_t *) calloc(C_len, sizeof(size_t));
 
@@ -96,11 +109,15 @@ void counting_sort(const char *file_name, size_t len, double* t1, double* t2, do
     {
         C[A[i] - min]++;
     }
+#ifdef TIME_MEASURES
     ENDTIME(3, *t3);
+#endif
 
 
     // Ordering based on the frequency array.
+#ifdef TIME_MEASURES
     STARTTIME(4);
+#endif
     k = 0;
 
     for (size_t i = 0; i < C_len; i++)
@@ -112,13 +129,16 @@ void counting_sort(const char *file_name, size_t len, double* t1, double* t2, do
     }
     
     free(C);    // Dealloc the frequency vector.
+#ifdef TIME_MEASURES
     ENDTIME(4, *t4);
 
     STARTTIME(5);
+#endif
     fptr = fopen(file_name, "wb");
     fwrite(A, sizeof(int), len, fptr);
     fclose(fptr);
+#ifdef TIME_MEASURES
     ENDTIME(5, *t5);
-    
+#endif
 }
 

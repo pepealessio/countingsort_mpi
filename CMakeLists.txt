@@ -60,6 +60,7 @@ add_executable(main_measures_seq_O2 source/main_measures_sequential.c)
 target_compile_options(main_measures_seq_O2 PRIVATE -O2)
 target_link_libraries(main_measures_seq_O2 PRIVATE util counting_sort)
 
+
 # add_executable(main_measures_O0 source/main_measure.c)
 # target_link_libraries(main_measures_O0 PUBLIC OpenMP::OpenMP_C)
 # target_compile_options(main_measures_O0 PRIVATE -O0)
@@ -98,12 +99,12 @@ target_link_libraries(main_measures_seq_O2 PRIVATE util counting_sort)
 
 # ---------------------------------------- TEST -----------------------------------------
 
-# enable_testing()
+enable_testing()
 
-# add_executable(counting_sort_test test/counting_sort_test.c)
-# target_link_libraries(counting_sort_test PRIVATE util counting_sort counting_sort_mpi)
-# target_link_libraries(counting_sort_test PUBLIC MPI::MPI_C)
-# add_test(NAME counting_sort_test COMMAND counting_sort_test)
+add_executable(counting_sort_test test/counting_sort_test.c)
+target_link_libraries(counting_sort_test PRIVATE util counting_sort counting_sort_mpi)
+target_link_libraries(counting_sort_test PUBLIC MPI::MPI_C)
+add_test(NAME counting_sort_test COMMAND counting_sort_test)
 
 
 # # # ----------------------------- DOCS -------------------------------------

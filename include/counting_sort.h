@@ -41,8 +41,12 @@
 #ifndef _DEF_COUNTINGSORT_H_
 #define _DEF_COUNTINGSORT_H_
 
+// #define TIME_MEASURES
 
-void counting_sort(const char *file_name, size_t len, double* t1, double* t2, double* t3, double* t4, double* t5); 
-
+#ifdef TIME_MEASURES
+    void counting_sort(const char *file_name, size_t len, double* t1, double* t2, double* t3, double* t4, double* t5); 
+#else
+    void counting_sort(const char *fileName, size_t len);
+#endif
 
 #endif /*_DEF_COUNTINGSORT_H_*/

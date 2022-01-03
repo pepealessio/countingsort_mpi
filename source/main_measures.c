@@ -67,20 +67,30 @@ int main(int argc, char *argv[])
     MPI_Comm_rank(MPI_COMM_WORLD, &worldRank);
 
     STARTTIME(0); 
-    counting_sort_mpi(fileName, arrayLen, &loc_t1, &loc_t2, &loc_t3, &loc_t4, &loc_t5, &loc_t6);
+#ifdef TIME_MEASURES
+    counting_sort_mpi2(fileName, arrayLen, &loc_t1, &loc_t2, &loc_t3, &loc_t4, &loc_t5, &loc_t6);
+#else
+    counting_sort_mpi2(fileName, arrayLen);
+#endif
     ENDTIME(0, locTimeAlgo);
 
     MPI_Reduce(&locTimeAlgo, &timeAlgo, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+#ifdef TIME_MEASURES
     MPI_Reduce(&loc_t1, &t1, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     MPI_Reduce(&loc_t2, &t2, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     MPI_Reduce(&loc_t3, &t3, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     MPI_Reduce(&loc_t4, &t4, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     MPI_Reduce(&loc_t5, &t5, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
     MPI_Reduce(&loc_t6, &t6, 1, MPI_DOUBLE, MPI_MAX, 0, MPI_COMM_WORLD);
+#endif
     if (worldRank == 0)
     {
         // Expected in output: t_algo\n
+    #ifdef TIME_MEASURES
         printf("%f,%f,%f,%f,%f,%f,%f\n", timeAlgo, t1, t2 ,t3 ,t4 ,t5 ,t6);
+    #else
+        printf("%f\n", timeAlgo);
+    #endif
     }
 
     // End MPI environment 
