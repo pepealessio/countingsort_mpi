@@ -31,10 +31,11 @@
 NMEASURES=10
 BASE_VALUE=0
 
-ARRAY_RC=(1000 10000 100000 1000000 10000000)
+ARRAY_RC=(1000 100000 10000000)
 ARRAY_RANGE=(1000 10000) # 100000)
 ARRAY_THS=(0 1 2 4 8)
 ARRAY_OPT=(2)
+ARRAY_VERSION=(1 2)
 # --------------------------------------------------
 
 
@@ -50,40 +51,42 @@ then
 	mv ${SCRIPTPATH}/../measures ${SCRIPTPATH}/../.oldmeasures/$(date '+%Y-%m-%d_%H-%M-%S')
 fi
 
-for opt in "${ARRAY_OPT[@]}"; do
-	for size in "${ARRAY_RC[@]}"; do
-		for range in "${ARRAY_RANGE[@]}"; do
-			for ths in "${ARRAY_THS[@]}"; do
-			
-				ths_str=$(printf "%02d" $ths)
+for version in "${ARRAY_VERSION[@]}"; do
+	for opt in "${ARRAY_OPT[@]}"; do
+		for size in "${ARRAY_RC[@]}"; do
+			for range in "${ARRAY_RANGE[@]}"; do
+				for ths in "${ARRAY_THS[@]}"; do
 				
-				# Output file
-				OUT_FILE=${SCRIPTPATH}/../measures/raw/opt_${opt}_size_${size}_range_${range}_threads_${ths}.csv
-			
-				mkdir -p $(dirname $OUT_FILE) 2> /dev/null
+					ths_str=$(printf "%02d" $ths)
+					
+					# Output file
+					OUT_FILE=${SCRIPTPATH}/../measures/raw/version_${version}/opt_${opt}_size_${size}_range_${range}_threads_${ths}.csv
 				
-				echo $(basename ${OUT_FILE})
-				echo "size,range,n_threads,t_algo,read,minmax,pmf,cdf,split,write" > ${OUT_FILE}
+					mkdir -p $(dirname $OUT_FILE) 2> /dev/null
+					
+					echo $(basename ${OUT_FILE})
+					echo "size,range,n_threads,t_algo,read,minmax,pmf,cdf,split,write" > ${OUT_FILE}
 
-				for ((i = 0 ; i < ${NMEASURES}	; i++)); do
-					declare -A x
-					./build/generate file${size} ${size} ${BASE_VALUE} ${BASE_VALUE}+${range}
-					echo -n ${size},${range},${ths}, >> ${OUT_FILE}
-					if [[ ${ths} -eq 0 ]]; then
-						(./build/main_measures_seq_O${opt} file${size} ${size})2>&1>> ${OUT_FILE}
-					else
-						arr=($(mpirun -np ${ths} ./build/main_measures_O${opt} file${size} ${size}))
-						printf '%s\n' "${arr[@]}" | awk '$1>max||NR==1 {max=$1} END {print  max}' >> ${OUT_FILE}
-					fi
-					# Progress bar
-					printf "\r> %d/%d %3.1d%% " $(expr ${i} + 1) ${NMEASURES} $(expr \( \( ${i} + 1 \) \* 100 \) / ${NMEASURES})
-					printf "#%.0s" $(seq -s " " 1 $(expr \( ${i} \* 40 \) / ${NMEASURES}))
+					for ((i = 0 ; i < ${NMEASURES}	; i++)); do
+						declare -A x
+						./build/generate file${size} ${size} ${BASE_VALUE} ${BASE_VALUE}+${range}
+						echo -n ${size},${range},${ths}, >> ${OUT_FILE}
+						if [[ ${ths} -eq 0 ]]; then
+							(./build/main_measures_seq_O${opt} file${size} ${size} ${version})2>&1>> ${OUT_FILE}
+						else
+							arr=($(mpirun -np ${ths} ./build/main_measures_O${opt} file${size} ${size} ${version}))
+							printf '%s\n' "${arr[@]}" | awk '$1>max||NR==1 {max=$1} END {print  max}' >> ${OUT_FILE}
+						fi
+						# Progress bar
+						printf "\r> %d/%d %3.1d%% " $(expr ${i} + 1) ${NMEASURES} $(expr \( \( ${i} + 1 \) \* 100 \) / ${NMEASURES})
+						printf "#%.0s" $(seq -s " " 1 $(expr \( ${i} \* 40 \) / ${NMEASURES}))
 
-					rm file${size}
+						rm file${size}
+					done
+
+					# End Progress Bar
+					printf "\n"
 				done
-
-				# End Progress Bar
-				printf "\n"
 			done
 		done
 	done

@@ -47,15 +47,16 @@
 int main(int argc, char *argv[])
 {
     // Check parameter usage
-    if (argc != 3)
+    if (argc != 4)
     {
-        printf("USAGE: %s file_name arrayLen\n", argv[0]);
+        printf("USAGE: %s file_name arrayLen algo_version\n", argv[0]);
         return EXIT_FAILURE;
     }
 
     // Read parameters from argv
     const char *fileName = argv[1];
     size_t arrayLen = atoi(argv[2]);
+    int algoVersion = atoi(argv[3]);
     double timeAlgo, locTimeAlgo;
     double t1, t2, t3, t4, t5, t6;
     double loc_t1, loc_t2, loc_t3, loc_t4, loc_t5, loc_t6;
@@ -68,9 +69,23 @@ int main(int argc, char *argv[])
 
     STARTTIME(0); 
 #ifdef TIME_MEASURES
-    counting_sort_mpi2(fileName, arrayLen, &loc_t1, &loc_t2, &loc_t3, &loc_t4, &loc_t5, &loc_t6);
+    if (algoVersion == 1)
+    {
+        counting_sort_mpi(fileName, arrayLen, &loc_t1, &loc_t2, &loc_t3, &loc_t4, &loc_t5, &loc_t6);
+    }
+    else if (algoVersion == 2) 
+    {
+        counting_sort_mpi2(fileName, arrayLen, &loc_t1, &loc_t2, &loc_t3, &loc_t4, &loc_t5, &loc_t6);
+    }
 #else
-    counting_sort_mpi2(fileName, arrayLen);
+    if (algoVersion == 1)
+    {
+        counting_sort_mpi(fileName, arrayLen);
+    }
+    else if (algoVersion == 2) 
+    {
+        counting_sort_mpi2(fileName, arrayLen);
+    }
 #endif
     ENDTIME(0, locTimeAlgo);
 
