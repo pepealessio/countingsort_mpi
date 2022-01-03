@@ -61,41 +61,34 @@ target_compile_options(main_measures_seq_O2 PRIVATE -O2)
 target_link_libraries(main_measures_seq_O2 PRIVATE util counting_sort)
 
 
-# add_executable(main_measures_O0 source/main_measure.c)
-# target_link_libraries(main_measures_O0 PUBLIC OpenMP::OpenMP_C)
-# target_compile_options(main_measures_O0 PRIVATE -O0)
-# target_link_libraries(main_measures_O0 PRIVATE util counting_sort)
+add_executable(main_measures_O0 source/main_measures.c)
+target_compile_options(main_measures_O0 PRIVATE -O0)
+target_link_libraries(main_measures_O0 PRIVATE util counting_sort_mpi)
+target_link_libraries(main_measures_O0 PUBLIC MPI::MPI_C)
 
-# add_executable(main_measures_seq_O0 source/main_measure.c)
-# target_compile_options(main_measures_seq_O0 PRIVATE -O0)
-# target_link_libraries(main_measures_seq_O0 PRIVATE util_seq counting_sort_seq)
+add_executable(main_measures_seq_O0 source/main_measures_sequential.c)
+target_compile_options(main_measures_seq_O0 PRIVATE -O0)
+target_link_libraries(main_measures_seq_O0 PRIVATE util counting_sort)
 
-# add_executable(main_measures_O1 source/main_measure.c)
-# target_link_libraries(main_measures_O1 PUBLIC OpenMP::OpenMP_C)
-# target_compile_options(main_measures_O1 PRIVATE -O1)
-# target_link_libraries(main_measures_O1 PRIVATE util counting_sort)
 
-# add_executable(main_measures_seq_O1 source/main_measure.c)
-# target_compile_options(main_measures_seq_O1 PRIVATE -O1)
-# target_link_libraries(main_measures_seq_O1 PRIVATE util_seq counting_sort_seq)
+add_executable(main_measures_O1 source/main_measures.c)
+target_compile_options(main_measures_O1 PRIVATE -O1)
+target_link_libraries(main_measures_O1 PRIVATE util counting_sort_mpi)
+target_link_libraries(main_measures_O1 PUBLIC MPI::MPI_C)
 
-# add_executable(main_measures_O2 source/main_measure.c)
-# target_link_libraries(main_measures_O2 PUBLIC OpenMP::OpenMP_C)
-# target_compile_options(main_measures_O2 PRIVATE -O2)
-# target_link_libraries(main_measures_O2 PRIVATE util counting_sort)
+add_executable(main_measures_seq_O1 source/main_measures_sequential.c)
+target_compile_options(main_measures_seq_O1 PRIVATE -O1)
+target_link_libraries(main_measures_seq_O1 PRIVATE util counting_sort)
 
-# add_executable(main_measures_seq_O2 source/main_measure.c)
-# target_compile_options(main_measures_seq_O2 PRIVATE -O2)
-# target_link_libraries(main_measures_seq_O2 PRIVATE util_seq counting_sort_seq)
 
-# add_executable(main_measures_O3 source/main_measure.c)
-# target_link_libraries(main_measures_O3 PUBLIC OpenMP::OpenMP_C)
-# target_compile_options(main_measures_O3 PRIVATE -O3)
-# target_link_libraries(main_measures_O3 PRIVATE util counting_sort)
+add_executable(main_measures_O3 source/main_measures.c)
+target_compile_options(main_measures_O3 PRIVATE -O3)
+target_link_libraries(main_measures_O3 PRIVATE util counting_sort_mpi)
+target_link_libraries(main_measures_O3 PUBLIC MPI::MPI_C)
 
-# add_executable(main_measures_seq_O3 source/main_measure.c)
-# target_compile_options(main_measures_seq_O3 PRIVATE -O3)
-# target_link_libraries(main_measures_seq_O3 PRIVATE util_seq counting_sort_seq)
+add_executable(main_measures_seq_O3 source/main_measures_sequential.c)
+target_compile_options(main_measures_seq_O3 PRIVATE -O3)
+target_link_libraries(main_measures_seq_O3 PRIVATE util counting_sort)
 
 # ---------------------------------------- TEST -----------------------------------------
 
