@@ -63,7 +63,7 @@ for opt in "${ARRAY_OPT[@]}"; do
 				mkdir -p $(dirname $OUT_FILE) 2> /dev/null
 				
 				echo $(basename ${OUT_FILE})
-				echo "size,range,n_threads,t_algo" > ${OUT_FILE}
+				echo "size,range,n_threads,t_algo,read,minmax,pmf,cdf,split,write" > ${OUT_FILE}
 
 				for ((i = 0 ; i < ${NMEASURES}	; i++)); do
 					declare -A x

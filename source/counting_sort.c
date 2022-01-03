@@ -49,7 +49,7 @@
  * @param file_name     The file name into write the array.
  * @param len           The lenght to the array to reorder.
  */
-void counting_sort(const char *file_name, size_t len) 
+void counting_sort(const char *file_name, size_t len, double* t1, double* t2, double* t3, double* t4,double* t5) 
 {
     // Empty or lenght=1 array
     if (len < 2) return;
@@ -61,12 +61,15 @@ void counting_sort(const char *file_name, size_t len)
     size_t C_len, k;
     A = malloc(len * sizeof(int));
 
+    STARTTIME(1);
     // Read array from file
     fptr = fopen(file_name, "rb");
     fread(A, sizeof(int), len, fptr);
     fclose(fptr);
+    ENDTIME(1, *t1);
 
     //Compute max and min of v.
+    STARTTIME(2);
     min = A[0];
     max = A[0];
 
@@ -81,8 +84,10 @@ void counting_sort(const char *file_name, size_t len)
             max = A[i];
         }
     }
+    ENDTIME(2, *t2);
 
     // Construct a zeros array of lenght max-min+1.
+    STARTTIME(3);
     C_len = max - min + 1;
     C = (size_t *) calloc(C_len, sizeof(size_t));
 
@@ -91,9 +96,11 @@ void counting_sort(const char *file_name, size_t len)
     {
         C[A[i] - min]++;
     }
+    ENDTIME(3, *t3);
 
 
     // Ordering based on the frequency array.
+    STARTTIME(4);
     k = 0;
 
     for (size_t i = 0; i < C_len; i++)
@@ -105,11 +112,13 @@ void counting_sort(const char *file_name, size_t len)
     }
     
     free(C);    // Dealloc the frequency vector.
+    ENDTIME(4, *t4);
 
-
+    STARTTIME(5);
     fptr = fopen(file_name, "wb");
     fwrite(A, sizeof(int), len, fptr);
     fclose(fptr);
+    ENDTIME(5, *t5);
     
 }
 

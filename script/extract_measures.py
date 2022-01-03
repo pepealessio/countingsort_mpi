@@ -34,7 +34,7 @@ __version__ = "1.0.0"
 # ------------- Don't edit up here -------------
 
 # --------- You can edit this fields -----------
-ARRAY_RC=[1000, 10000, 100000, 1000000, 10000000]
+ARRAY_RC=[1000, 10000, 100000, 1000000] #, 10000000]
 ARRAY_RANGE=[1000, 10000] # , 100000]
 ARRAY_THS=[0, 1, 2, 4, 8]
 ARRAY_OPT=[2]
@@ -43,7 +43,7 @@ TITLE=''
 
 # ------------- Don't edit below here ----------
 
-RAW_FIELDS = ['size', 'range', 'n_th', 't_algo'] 
+RAW_FIELDS = ['size', 'range', 'n_th', 't_algo', 'read','minmax','pmf','cdf','split','write'] 
 
 
 import matplotlib.pyplot as plt

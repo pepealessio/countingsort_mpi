@@ -42,7 +42,7 @@
 #define _DEF_COUNTINGSORT_H_
 
 
-void counting_sort(const char *file_name, size_t len); 
+void counting_sort(const char *file_name, size_t len, double* t1, double* t2, double* t3, double* t4, double* t5); 
 
 
 #endif /*_DEF_COUNTINGSORT_H_*/

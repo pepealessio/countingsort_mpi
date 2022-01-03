@@ -53,7 +53,8 @@ void minmax_mpi(int *V, size_t len, int *min, int *max);
  * @param fileName      The path to the file containing an array of integert to order (in bytes).
  * @param arrayLen      The lenght of the array in the file.
  */
-void counting_sort_mpi(const char *fileName, size_t arrayLen) {
+void counting_sort_mpi(const char *fileName, size_t arrayLen, double* t1, double* t2,
+ double* t3,double* t4,double* t5,double* t6) {
     // Empty or lenght=1 array
     if (arrayLen < 2) return;
 
@@ -71,6 +72,7 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
     // ---------------------------------------------------------------
     
     // ------------------- Read array from file ----------------------
+    STARTTIME(1);
     // Open file in read and write mode.
     MPI_File_open(MPI_COMM_WORLD, fileName, MPI_MODE_RDWR, MPI_INFO_NULL, &fh);
 
@@ -88,14 +90,18 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
     // Each thread read a part of the vector
     MPI_File_seek(fh, locArrayStartOffset * sizeof(int), MPI_SEEK_SET);
     MPI_File_read(fh, locArray, locArrayLen, MPI_INT, MPI_STATUS_IGNORE);
+    ENDTIME(1, *t1);
     // ---------------------------------------------------------------
 
     // ------------------- Compute min & max -------------------------
+    STARTTIME(2);
     // Find global min and max and broadcast that to all thread
     minmax_mpi(locArray, locArrayLen, &min, &max);
+    ENDTIME(2, *t2);
     // ---------------------------------------------------------------
 
     // ------------------- Compute the frequency vector --------------
+    STARTTIME(3);
     // Compute the lenght of the pmf array
     CLen = max - min + 1;
 
@@ -119,9 +125,11 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
     
     // Reduce to global pmf array (starting from the second element of C because we need the first equal to one).
     MPI_Reduce(locC, C+1, CLen, MPI_LONG, MPI_SUM, 0, MPI_COMM_WORLD);
+    ENDTIME(3, *t3);
     // ---------------------------------------------------------------
 
     // ------------------- Compute the CDF vector --------------------
+    STARTTIME(4);
     // Master thread compute the CDF array
     if (worldRank == 0) 
     {
@@ -151,10 +159,11 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
         }
         locCDFLens[worldSize-1] += CLen % worldSize;  // last thread manage the last element non prefectly divided 
     }
+    ENDTIME(4, *t4);
     // ---------------------------------------------------------------
 
     // ------------------- Split & send CDF array --------------------
-
+    STARTTIME(5);
     // Send realLocCDFLen to all thread because they need that to compute the value to write in the file
     //MPI_Bcast(&realLocCDFLen, 1, MPI_INT, 0, MPI_COMM_WORLD);
     realLocCDFLen = CLen / worldSize;
@@ -177,10 +186,11 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
         free(locCDFDisplacement);
         free(C);
     }
+    ENDTIME(5, *t5);
     // ---------------------------------------------------------------
 
     // ----------------- Write the correct result --------------------
-
+    STARTTIME(6);
     // Each thread compute the part of the array to write
     locWriteSize = (locC[locCDFLen-1] - locC[0]);
     locOut = malloc( locWriteSize * sizeof(int));
@@ -208,6 +218,7 @@ void counting_sort_mpi(const char *fileName, size_t arrayLen) {
 
     // Each thread dealloc their local C
     free(locC);
+    ENDTIME(6, *t6);
 }
 
 

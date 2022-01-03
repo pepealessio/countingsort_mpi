@@ -56,14 +56,15 @@ int main(int argc, char *argv[])
     const char *fileName = argv[1];
     size_t arrayLen = atoi(argv[2]);
     double time_algo=0.0;
+    double t1, t2, t3, t4, t5;
 
     STARTTIME(0); 
-    counting_sort(fileName, arrayLen);
+    counting_sort(fileName, arrayLen, &t1, &t2, &t3, &t4, &t5);
     ENDTIME(0, time_algo);
 
     // Expected in output:
     // t_algo 
-    printf("%f\n", time_algo);
+    printf("%f,%f,%f,%f,0,%f,%f\n", time_algo, t1, t2, t3, t4, t5);
 
     return EXIT_SUCCESS;
 }
