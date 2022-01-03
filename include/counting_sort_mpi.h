@@ -40,7 +40,7 @@
 #ifndef _DEF_COUNTINGSORT_MPI_H_
 #define _DEF_COUNTINGSORT_MPI_H_
 
-// #define TIME_MEASURES
+#define TIME_MEASURES
 
 #ifdef TIME_MEASURES
     void counting_sort_mpi(const char *fileName, size_t arrayLen, double* t1, double* t2, double* t3,double* t4,double* t5,double* t6);
