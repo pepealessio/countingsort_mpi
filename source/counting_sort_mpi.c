@@ -95,7 +95,7 @@ void minmax_mpi(int *V, size_t len, int *min, int *max);
 
     // Each thread read a part of the vector
     MPI_File_seek(fh, locArrayStartOffset * sizeof(int), MPI_SEEK_SET);
-    MPI_File_read(fh, locArray, locArrayLen, MPI_INT, MPI_STATUS_IGNORE);
+    MPI_File_read_all(fh, locArray, locArrayLen, MPI_INT, MPI_STATUS_IGNORE);
 #ifdef TIME_MEASURES
     ENDTIME(1, *t1);
 #endif
@@ -291,7 +291,7 @@ void counting_sort_mpi2(const char *fileName, size_t arrayLen)
 
     // Each thread read a part of the vector
     MPI_File_seek(fh, locArrayStartOffset * sizeof(int), MPI_SEEK_SET);
-    MPI_File_read(fh, locArray, locArrayLen, MPI_INT, MPI_STATUS_IGNORE);
+    MPI_File_read_all(fh, locArray, locArrayLen, MPI_INT, MPI_STATUS_IGNORE);
 #ifdef TIME_MEASURES
     ENDTIME(1, *t1);
 #endif
