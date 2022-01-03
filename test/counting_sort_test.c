@@ -285,8 +285,6 @@ unsigned short ptest2()
     counting_sort_mpi("ptest2.data", len);
     read_from_file("ptest2.data", input, len);
 
-    printf("%d, %d", array_is_ordered(input, len), array_is_equal(input, expected, len));
-
     return (array_is_ordered(input, len) && array_is_equal(input, expected, len));
 }
 
