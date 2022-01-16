@@ -32,7 +32,7 @@
  * @brief   Counting sort alghorithm in serial version. That are inspired 
  *          at https://it.wikipedia.org/wiki/Counting_sort.   
  * @version 1.0.0
- * @date 2021-12-10
+ * @date 2022-01-17
  * 
  * @copyright Copyright (c) 2021
  * 

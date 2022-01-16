@@ -31,7 +31,7 @@
  * @author  Teresa Tortorella    (t.tortorella3@studenti.unisa.it)
  * @brief   This file contains utility function used to work with random array.  
  * @version 1.0.0
- * @date 2021-11-01
+ * @date 2022-01-17
  * 
  * @copyright Copyright (c) 2021
  * 
