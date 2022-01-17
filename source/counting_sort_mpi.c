@@ -31,7 +31,7 @@
  * @author  Teresa Tortorella    (t.tortorella3@studenti.unisa.it)
  * @brief   Counting sort alghorithm in mpi version.  
  * @version 1.0.0
- * @date 2021-12-10
+ * @date 2022-01-17
  * 
  * @copyright Copyright (c) 2021
  * 
